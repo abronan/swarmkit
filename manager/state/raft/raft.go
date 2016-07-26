@@ -296,7 +296,7 @@ func (n *Node) JoinAndStart() error {
 func DefaultNodeConfig() *raft.Config {
 	return &raft.Config{
 		HeartbeatTick:   1,
-		ElectionTick:    3,
+		ElectionTick:    5,
 		MaxSizePerMsg:   math.MaxUint16,
 		MaxInflightMsgs: 256,
 		Logger:          log.L,
@@ -309,7 +309,7 @@ func DefaultRaftConfig() api.RaftConfig {
 		KeepOldSnapshots:           0,
 		SnapshotInterval:           10000,
 		LogEntriesForSlowFollowers: 500,
-		ElectionTick:               3,
+		ElectionTick:               5,
 		HeartbeatTick:              1,
 	}
 }
