@@ -114,6 +114,7 @@ type Node struct {
 
 	ticker      clock.Ticker
 	sendTimeout time.Duration
+	applied     chan struct{}
 	stopCh      chan struct{}
 	doneCh      chan struct{}
 	// removeRaftCh notifies about node deletion from raft cluster
@@ -193,6 +194,7 @@ func NewNode(ctx context.Context, opts NewNodeOptions) *Node {
 			Logger:          cfg.Logger,
 		},
 		forceNewCluster:     opts.ForceNewCluster,
+		applied:             make(chan struct{}),
 		stopCh:              make(chan struct{}),
 		doneCh:              make(chan struct{}),
 		removeRaftCh:        make(chan struct{}),
@@ -367,11 +369,14 @@ func (n *Node) Run(ctx context.Context) error {
 			}
 
 			// Process committed entries
-			for _, entry := range rd.CommittedEntries {
-				if err := n.processCommitted(entry); err != nil {
-					n.Config.Logger.Error(err)
+			go func() {
+				for _, entry := range rd.CommittedEntries {
+					if err := n.processCommitted(entry); err != nil {
+						n.Config.Logger.Error(err)
+					}
 				}
-			}
+				n.applied <- struct{}{}
+			}()
 
 			// Trigger a snapshot every once in awhile
 			if n.snapshotInProgress == nil &&
@@ -409,6 +414,10 @@ func (n *Node) Run(ctx context.Context) error {
 					}
 				}
 				n.restored = true
+			}
+
+			if n.Status().RaftState == raft.StateCandidate {
+				<-n.applied
 			}
 
 			// Advance the state machine
