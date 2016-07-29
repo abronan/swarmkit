@@ -401,9 +401,7 @@ func (n *Node) Run(ctx context.Context) error {
 			// restoring from the state, campaign to be the
 			// leader.
 			if !n.restored {
-				// Node ID should be in the progress list to Campaign
-				_, ok := n.Node.Status().Progress[n.Config.ID]
-				if len(n.cluster.Members()) <= 1 && ok {
+				if len(n.cluster.Members()) <= 1 {
 					if err := n.Campaign(n.Ctx); err != nil {
 						panic("raft: cannot campaign to be the leader on node restore")
 					}
