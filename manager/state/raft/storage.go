@@ -310,6 +310,8 @@ func (n *Node) doSnapshot(raftConfig *api.RaftConfig) {
 	viewStarted := make(chan struct{})
 	n.asyncTasks.Add(1)
 	n.snapshotInProgress = make(chan uint64, 1) // buffered in case Shutdown is called during the snapshot
+
+	n.indexLock.RLock()
 	go func(appliedIndex, snapshotIndex uint64) {
 		defer func() {
 			n.asyncTasks.Done()
@@ -352,6 +354,7 @@ func (n *Node) doSnapshot(raftConfig *api.RaftConfig) {
 			n.Config.Logger.Error(err)
 		}
 	}(n.appliedIndex, n.snapshotIndex)
+	n.indexLock.RUnlock()
 
 	// Wait for the goroutine to establish a read transaction, to make
 	// sure it sees the state as of this moment.

@@ -114,6 +114,8 @@ type Node struct {
 
 	ticker      clock.Ticker
 	sendTimeout time.Duration
+	applied     chan struct{}
+	indexLock   sync.RWMutex
 	stopCh      chan struct{}
 	doneCh      chan struct{}
 	// removeRaftCh notifies about node deletion from raft cluster
@@ -193,6 +195,7 @@ func NewNode(ctx context.Context, opts NewNodeOptions) *Node {
 			Logger:          cfg.Logger,
 		},
 		forceNewCluster:     opts.ForceNewCluster,
+		applied:             make(chan struct{}),
 		stopCh:              make(chan struct{}),
 		doneCh:              make(chan struct{}),
 		removeRaftCh:        make(chan struct{}),
@@ -361,24 +364,31 @@ func (n *Node) Run(ctx context.Context) error {
 				if err := n.restoreFromSnapshot(rd.Snapshot.Data, n.forceNewCluster); err != nil {
 					n.Config.Logger.Error(err)
 				}
+				n.indexLock.Lock()
 				n.appliedIndex = rd.Snapshot.Metadata.Index
 				n.snapshotIndex = rd.Snapshot.Metadata.Index
 				n.confState = rd.Snapshot.Metadata.ConfState
+				n.indexLock.Unlock()
 			}
 
 			// Process committed entries
-			for _, entry := range rd.CommittedEntries {
-				if err := n.processCommitted(entry); err != nil {
-					n.Config.Logger.Error(err)
+			go func() {
+				for _, entry := range rd.CommittedEntries {
+					if err := n.processCommitted(entry); err != nil {
+						n.Config.Logger.Error(err)
+					}
 				}
-			}
+				n.applied <- struct{}{}
+			}()
 
 			// Trigger a snapshot every once in awhile
+			n.indexLock.RLock()
 			if n.snapshotInProgress == nil &&
 				raftConfig.SnapshotInterval > 0 &&
 				n.appliedIndex-n.snapshotIndex >= raftConfig.SnapshotInterval {
 				n.doSnapshot(&raftConfig)
 			}
+			n.indexLock.RUnlock()
 
 			// If we cease to be the leader, we must cancel
 			// any proposals that are currently waiting for
@@ -395,6 +405,11 @@ func (n *Node) Run(ctx context.Context) error {
 					n.wasLeader = true
 					n.leadershipBroadcast.Write(IsLeader)
 				}
+			}
+
+			// Wait for all the entries to be applied if we are a candidate.
+			if n.Status().RaftState == raft.StateCandidate {
+				<-n.applied
 			}
 
 			// If we are the only registered member after
@@ -1173,7 +1188,9 @@ func (n *Node) processCommitted(entry raftpb.Entry) error {
 		n.processConfChange(entry)
 	}
 
+	n.indexLock.Lock()
 	n.appliedIndex = entry.Index
+	n.indexLock.Unlock()
 	return nil
 }
 
