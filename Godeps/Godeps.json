@@ -101,58 +101,58 @@
 		},
 		{
 			"ImportPath": "github.com/coreos/etcd/pkg/crc",
-			"Comment": "v3.0.0-beta.0-1098-g06e2338",
-			"Rev": "06e2338108fdc694349aed923f4a7e45cf0cec1f"
+			"Comment": "v3.0.0-beta.0-1119-g965b290",
+			"Rev": "965b2901d563be02d700c15b73caf1e40d43dd5c"
 		},
 		{
 			"ImportPath": "github.com/coreos/etcd/pkg/fileutil",
-			"Comment": "v3.0.0-beta.0-1098-g06e2338",
-			"Rev": "06e2338108fdc694349aed923f4a7e45cf0cec1f"
+			"Comment": "v3.0.0-beta.0-1119-g965b290",
+			"Rev": "965b2901d563be02d700c15b73caf1e40d43dd5c"
 		},
 		{
 			"ImportPath": "github.com/coreos/etcd/pkg/idutil",
-			"Comment": "v3.0.0-beta.0-1098-g06e2338",
-			"Rev": "06e2338108fdc694349aed923f4a7e45cf0cec1f"
+			"Comment": "v3.0.0-beta.0-1119-g965b290",
+			"Rev": "965b2901d563be02d700c15b73caf1e40d43dd5c"
 		},
 		{
 			"ImportPath": "github.com/coreos/etcd/pkg/ioutil",
-			"Comment": "v3.0.0-beta.0-1098-g06e2338",
-			"Rev": "06e2338108fdc694349aed923f4a7e45cf0cec1f"
+			"Comment": "v3.0.0-beta.0-1119-g965b290",
+			"Rev": "965b2901d563be02d700c15b73caf1e40d43dd5c"
 		},
 		{
 			"ImportPath": "github.com/coreos/etcd/pkg/pbutil",
-			"Comment": "v3.0.0-beta.0-1098-g06e2338",
-			"Rev": "06e2338108fdc694349aed923f4a7e45cf0cec1f"
+			"Comment": "v3.0.0-beta.0-1119-g965b290",
+			"Rev": "965b2901d563be02d700c15b73caf1e40d43dd5c"
 		},
 		{
 			"ImportPath": "github.com/coreos/etcd/raft",
-			"Comment": "v3.0.0-beta.0-1098-g06e2338",
-			"Rev": "06e2338108fdc694349aed923f4a7e45cf0cec1f"
+			"Comment": "v3.0.0-beta.0-1119-g965b290",
+			"Rev": "965b2901d563be02d700c15b73caf1e40d43dd5c"
 		},
 		{
 			"ImportPath": "github.com/coreos/etcd/raft/raftpb",
-			"Comment": "v3.0.0-beta.0-1098-g06e2338",
-			"Rev": "06e2338108fdc694349aed923f4a7e45cf0cec1f"
+			"Comment": "v3.0.0-beta.0-1119-g965b290",
+			"Rev": "965b2901d563be02d700c15b73caf1e40d43dd5c"
 		},
 		{
 			"ImportPath": "github.com/coreos/etcd/snap",
-			"Comment": "v3.0.0-beta.0-1098-g06e2338",
-			"Rev": "06e2338108fdc694349aed923f4a7e45cf0cec1f"
+			"Comment": "v3.0.0-beta.0-1119-g965b290",
+			"Rev": "965b2901d563be02d700c15b73caf1e40d43dd5c"
 		},
 		{
 			"ImportPath": "github.com/coreos/etcd/snap/snappb",
-			"Comment": "v3.0.0-beta.0-1098-g06e2338",
-			"Rev": "06e2338108fdc694349aed923f4a7e45cf0cec1f"
+			"Comment": "v3.0.0-beta.0-1119-g965b290",
+			"Rev": "965b2901d563be02d700c15b73caf1e40d43dd5c"
 		},
 		{
 			"ImportPath": "github.com/coreos/etcd/wal",
-			"Comment": "v3.0.0-beta.0-1098-g06e2338",
-			"Rev": "06e2338108fdc694349aed923f4a7e45cf0cec1f"
+			"Comment": "v3.0.0-beta.0-1119-g965b290",
+			"Rev": "965b2901d563be02d700c15b73caf1e40d43dd5c"
 		},
 		{
 			"ImportPath": "github.com/coreos/etcd/wal/walpb",
-			"Comment": "v3.0.0-beta.0-1098-g06e2338",
-			"Rev": "06e2338108fdc694349aed923f4a7e45cf0cec1f"
+			"Comment": "v3.0.0-beta.0-1119-g965b290",
+			"Rev": "965b2901d563be02d700c15b73caf1e40d43dd5c"
 		},
 		{
 			"ImportPath": "github.com/coreos/go-systemd/journal",

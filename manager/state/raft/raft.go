@@ -727,6 +727,15 @@ func (n *Node) RemoveMember(ctx context.Context, id uint64) error {
 	n.membershipLock.Lock()
 	defer n.membershipLock.Unlock()
 
+	// If self-remove but node is leader, transfer
+	// leadership to another member.
+	if n.Config.ID == id && n.isLeader() {
+		transferee := n.cluster.GetTransferee(n.Config.ID)
+		if transferee != nil {
+			n.TransferLeadership(n.Ctx, n.Config.ID, transferee.RaftID)
+		}
+	}
+
 	if n.cluster.CanRemoveMember(n.Config.ID, id) {
 		cc := raftpb.ConfChange{
 			ID:      id,
@@ -1311,16 +1320,6 @@ func (n *Node) applyRemoveNode(cc raftpb.ConfChange) (err error) {
 
 		// wait the commit ack to be sent before closing connection
 		n.asyncTasks.Wait()
-
-		// if there are only 2 nodes in the cluster, and leader is leaving
-		// before closing the connection, leader has to ensure that follower gets
-		// noticed about this raft conf change commit. Otherwise, follower would
-		// assume there are still 2 nodes in the cluster and won't get elected
-		// into the leader by acquiring the majority (2 nodes)
-
-		// while n.asyncTasks.Wait() could be helpful in this case
-		// it's the best-effort strategy, because this send could be fail due to some errors (such as time limit exceeds)
-		// TODO(Runshen Zhu): use leadership transfer to solve this case, after vendoring raft 3.0+
 	}
 
 	return n.cluster.RemoveMember(cc.NodeID)

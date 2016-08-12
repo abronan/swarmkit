@@ -2,6 +2,7 @@ package membership
 
 import (
 	"errors"
+	"sort"
 	"sync"
 
 	"google.golang.org/grpc"
@@ -81,6 +82,23 @@ func (c *Cluster) GetMember(id uint64) *Member {
 	c.mu.RLock()
 	defer c.mu.RUnlock()
 	return c.members[id]
+}
+
+// GetTransferee returns the member with the minimum ID in the Cluster.
+func (c *Cluster) GetTransferee(self uint64) *Member {
+	c.mu.RLock()
+	defer c.mu.RUnlock()
+
+	var ids []uint64
+	for id := range c.members {
+		if id == c.members[self].RaftID {
+			continue
+		}
+		ids = append(ids, id)
+	}
+	sort.Sort(ByIds(ids))
+
+	return c.members[ids[0]]
 }
 
 // AddMember adds a node to the Cluster Memberlist.
@@ -219,3 +237,10 @@ func (c *Cluster) CanRemoveMember(from uint64, id uint64) bool {
 
 	return true
 }
+
+// ByIds is the interface to sort member by raft ids
+type ByIds []uint64
+
+func (a ByIds) Len() int           { return len(a) }
+func (a ByIds) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+func (a ByIds) Less(i, j int) bool { return a[i] < a[j] }
